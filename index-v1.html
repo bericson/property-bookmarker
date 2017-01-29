@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script data-require="jquery@3.1.1" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  </head>
+
+  <body>
+    <h1>Property Bookmarker</h1>
+    <div id="Container"></div>
+    <button id="PostNewItem">Post New Item</button>
+
+    <script type="text/javascript">
+      // var root = "https://jsonplaceholder.typicode.com",
+      //    action = "/posts/",
+      //    action = "/users/",
+      //    url = root + action
+
+      // url = "https://clientside-api.herokuapp.com/api/v1/listings/";
+
+      // $.ajaxSetup({
+      //   headers : {   
+      //     "Authorization": "455fd78df48d4cd7f32a008259ed569d"
+      //   }
+      // });
+
+      // $.getJSON(url, function(data) {
+      //   console.log("data[0]:", data[0]);
+      //   console.log("data.length:", data.length);
+      //   var items = [];
+      //   $.each(data, function(key, val) {
+      //     // for(let i = 0; val = 0; ++i) {
+
+      //     // }
+      //     var listEl = "<li id='" + key + "'>" + val + "</li>";
+      //     //items.push(listEl);
+      //   });
+       
+      //   $( "<ul/>", {
+      //     "class": "my-new-list",
+      //     html: items.join( "" )
+      //   }).appendTo("#Container");
+      // });
+
+
+      // $.ajax({
+      //   //dataType: 'jsonp',
+      //   dataType: 'json',
+      //   //crossDomain: true,
+      //   //url: 'http://clientside-api.herokuapp.com/api/v1/listings/44f00b4c-a208-43b5-9a2c-ee6e49fef4bf',
+      //   url: "https://clientside-api.herokuapp.com/api/v1/listings/",
+      //   //url: "http://api.themoviedb.org/2.1/Movie.search/en/json/23afca60ebf72f8d88cdcae2c4f31866/goonies",
+      //   //url: "http://api.flickr.com/services/feeds/photos_public.gne?jsoncallback=?",
+      //   type: "GET",
+      //   //data: { id: '55b070ff-8a25-4fb8-9a8d-1617bbd8b788' },
+      //   // xhrFields: {
+      //   //   withCredentials: true
+      //   // },
+      //   //contentType: "application/x-www-form-urlencoded",
+      //   //contentType: "text/plain",
+      //   //crossDomain: true,
+      //   //jsonp: false,
+      //   beforeSend: function(xhr) {
+      //     //'Content-Type': 'application/json',
+      //     //'Accept': 'application/json'
+      //     // xhr.setRequestHeader("Content-Type", "application/json");
+      //     // xhr.setRequestHeader("Accept", "application/json");
+      //     //http://localhost:8080/
+      //     xhr.setRequestHeader("Authorization", "455fd78df48d4cd7f32a008259ed569d");
+      //   }
+      // })
+      // .done(function(resp) {        
+      //   // console.log("resp[0]:", resp[0]);
+      //   // console.log("resp.length:", resp.length);
+      //   // console.log("resp.data[0]:", resp.data[0]);
+      //   // console.log("resp.data.length:", resp.data.length);
+      //   console.log("Response:", resp);
+      //   console.log("JSON Stringified Response:", JSON.stringify(resp));
+      //   //console.log("Parsed JSON Response:", $.parseJSON(resp));
+      //   $("<div>").text("Success: " + JSON.stringify(resp)).appendTo("#Container");
+
+      //   var items = [];
+      //   $.each(resp, function() {
+      //     $.each(this, function(key, val) {
+      //       items.push("<li class='data-item'>" + key + ": " + val + "</li>");
+      //     });
+      //   });
+      //   $( "<ul/>", {
+      //     "id": "DataList",
+      //     html: items.join("")        
+      //   }).appendTo("#Container");
+      // })
+      // .fail(function(resp) {
+      //   console.log(resp);
+      //   console.log("JSONStringified Response:", JSON.stringify(resp));
+      //   $("<div>").text("Error: " + JSON.stringify(resp)).appendTo("#Container");
+      // });
+
+
+      //// POST new item to API
+      // data // optional, Validations: Must be a Hash
+      // data[attributes] // optional, Validations: Must be a Hash
+      // data[attributes][title] // optional, Validations: Must be String
+      // data[attributes][url] // optional, Validations: Must be String
+
+      // {
+      //   "data": [{
+      //       "id": "55b070ff-8a25-4fb8-9a8d-1617bbd8b788",
+      //       "type": "listings",
+      //       "attributes": {
+      //         "title": "Sweet listing",
+      //         "url": "http://google.com"
+      //       }
+      //     },
+      //     {
+      //       "id": "71b3b643-c9b5-4761-aa74-69057ccf1591",
+      //       "type": "listings",
+      //       "attributes": {
+      //         "title": "Sweet listing",
+      //         "url": "http://google.com"
+      //       }
+      //     }]
+      // }
+
+      // responseText:
+      // {
+      //   "errors": [{
+      //     "source": {
+      //       "pointer":"/data/attributes/title"
+      //     },
+      //     "detail": "can't be blank"
+      //   },
+      //   {
+      //     "source":{
+      //       "pointer": "/data/attributes/url"
+      //     },
+      //     "detail": "can't be blank"
+      //   }]
+      // }
+
+
+      var model = {
+        data: {
+          attributes: {
+            title: "Test POSTed Listing",
+            url: "http://dummydomain.com"
+          }
+        }
+      };
+
+      function postItem(){       
+        $.ajax({
+          type: "POST",
+          //contentType: "application/json",
+          url: "https://clientside-api.herokuapp.com/api/v1/listings/",
+          //data: JSON.stringify(model),
+          data: model,
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader("Authorization", "455fd78df48d4cd7f32a008259ed569d");
+          }
+        })
+        .done(function(resp) {
+          console.log(resp);
+          // console.log("JSONStringified Response:", JSON.stringify(resp));
+          // $("<div>").text("Error: " + JSON.stringify(resp)).appendTo("#Container");
+          $("<div>").text(resp.responseText).appendTo("#Container");
+        })
+        .fail(function(resp) {
+          console.log(resp);
+          // console.log("JSONStringified Response:", JSON.stringify(resp));
+          // $("<div>").text("Error: " + JSON.stringify(resp)).appendTo("#Container");
+          $("<div>").text(resp.responseText).appendTo("#Container");
+        }); 
+      }
+
+      $(function() {
+        $("#PostNewItem").on("click", function(){
+          postItem();
+        });
+      });
+    </script>
+
+  </body>
+</html>

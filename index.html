@@ -1,0 +1,240 @@
+<!DOCTYPE html><html><head><script data-require="jquery@3.1.1" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script><link href="/property-bookmarker/static/css/main.9a0fe4f1.css" rel="stylesheet"></head><body><div id="root" style="display:none"></div><h1>Property Bookmarker <span style="font-size:.5em">(basic JSON API CRUD UI)</span></h1><div id="AddNewItemContainer"></div><div id="ItemsListContainer"></div><script type="text/javascript">//// TODOs:
+      //  - document thought process/reasoning (only for notable/major moves?) as developing
+      //  - generally develop with the idea that functions are/or are parts of components with 
+      //    the idea of eventully developing all of UI in React
+      //  - wrap collection of $.ajax() calls into a set, as members of a separate module (IIFE), 
+      //    to be called using module pattern
+      //  - add form field/input/data type validation according to specs. from API docs
+      //  - add/write tests of some kind (npm install of mocha/chai or something?)
+      //  - add a notice to README.md informing the user of the hidden API key and how to recreate the file
+      ////
+
+      function clearItemsList() {
+        $("#ItemsListContainer").empty();
+      }
+
+      function clearAddNewItemInputs() {
+        $("#AddNewItemContainer").find("input").val("");
+      }
+
+      function createItemInput(name, label, value) {
+        var valueOrPlaceholder = !value ? 'placeholder="' + label + '"' : 'value="' + value + '"';
+        return '<input type="text" class="item-' + name + '" ' + valueOrPlaceholder + ' />';        
+      }
+
+      function createItemActionBtn(action, label) {
+        return '<button class="' + action + '-item" type="button">' + label +'</button>';
+      }
+
+      function renderAddNewItemInputs() {
+        var itemElsGroup = $('<form id="AddNewItemForm"><ul><li>' + 
+                              createItemInput("title", "Title") + 
+                              createItemInput("url", "URL") + 
+                              createItemActionBtn("add", "Add New Item") + 
+                            '</li></ul></form>');
+        itemElsGroup.appendTo("#AddNewItemContainer");
+      }
+
+      //const apiKey = config.API_KEY;
+
+      $.ajaxSetup({
+        //dataType: 'json',
+        beforeSend: function(xhr) {
+          xhr.setRequestHeader("Authorization", "455fd78df48d4cd7f32a008259ed569d");
+        }
+      });
+
+      //// GET
+      function getAllItems() {
+        $.ajax({
+          type: "GET",
+          url: "https://clientside-api.herokuapp.com/api/v1/listings/",
+        })
+        .done(function(resp, textStatus) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          //console.log("JSON Stringified resp/data:", JSON.stringify(resp));
+          //console.log("Parsed JSON Response:", $.parseJSON(resp));
+          //$("<div>").text(textStatus + ": " + JSON.stringify(resp)).appendTo("#ItemsListContainer");
+          var items = [];          
+          $.each(resp, function() {
+            $.each(resp.data, function(key, val) {
+              var itemElsGroup =  createItemInput("title", "Title", val.attributes.title) + 
+                                  createItemInput("url", "URL", val.attributes.url) + 
+                                  createItemActionBtn("update", "Update Item") + 
+                                  createItemActionBtn("delete", "Delete Item");
+              items.push('<li class="list-item" data-id="' + val.id + '">' +
+                            key + ': ' + JSON.stringify(val) + '<br />' + 
+                            itemElsGroup + 
+                          '</li><br />');
+              //items.push("<li class='list-item'>" + itemElsGroup + "</li>");
+            });
+          });
+          $("<form>", {"id": "ItemsListForm"}).appendTo("#ItemsListContainer");
+          $("<ul>", {
+            "id": "ItemsList",
+            html: items.join("")
+          }).appendTo("#ItemsListForm");
+        })
+        .fail(function(resp, textStatus, errorThrown) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          // console.log("errorThrown:", errorThrown);
+          $("<div>").text(textStatus + ": " + errorThrown + " - " + JSON.stringify(resp)).appendTo("#ItemsListContainer");
+        });
+      }
+
+      //// POST
+      function postNewItem(title = "Title", url = "URL") {
+        var model = {
+          data: {
+            attributes: {
+              title: title,
+              url: url
+            }
+          }
+        };
+
+        $.ajax({
+          type: "POST",
+          url: "https://clientside-api.herokuapp.com/api/v1/listings/",
+          data: model
+        })
+        .done(function(resp, textStatus) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          clearAddNewItemInputs();
+          clearItemsList();
+          $("<div>").text("Successfully added a new item.").appendTo("#ItemsListContainer");
+          getAllItems();
+        })
+        .fail(function(resp, textStatus, errorThrown) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          // console.log("errorThrown:", errorThrown);
+          clearItemsList();
+          $("<div>").text("Sorry, adding a new item failed.").appendTo("#ItemsListContainer");
+          getAllItems();
+        });
+      }
+
+      //// PUT
+      function updateItem(id, title, url) {
+        var model = {
+          data: {
+            attributes: {
+              title: title,
+              url: url
+            }
+          }
+        };
+        $.ajax({
+          type: "PUT",
+          url: "https://clientside-api.herokuapp.com/api/v1/listings/" + id,
+          data: model
+        })
+        .done(function(resp, textStatus) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          clearItemsList();
+          $("<div>").text("Successfully updated item ID: " + id).appendTo("#ItemsListContainer");
+          getAllItems();
+        })
+        .fail(function(resp, textStatus, errorThrown) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          // console.log("errorThrown:", errorThrown);
+          clearItemsList();
+          $("<div>").text("Sorry, failed to update item ID: " + id).appendTo("#ItemsListContainer");
+          getAllItems();
+        });
+      }
+
+      //// DELETE
+      function deleteItem(id) {
+        $.ajax({          
+          type: "DELETE",
+          url: "https://clientside-api.herokuapp.com/api/v1/listings/" + id,
+        })
+        .done(function(resp, textStatus) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          clearItemsList();
+          $("<div>").text("Successfully deleted item ID: " + id).appendTo("#ItemsListContainer");
+          getAllItems();
+        })
+        .fail(function(resp, textStatus, errorThrown) {
+          // console.log("resp:", resp);
+          // console.log("textStatus:", textStatus);
+          // console.log("errorThrown:", errorThrown);
+          clearItemsList();
+          $("<div>").text("Sorry, failed to delete item ID: " + id).appendTo("#ItemsListContainer");
+          getAllItems();
+        });
+      }
+
+      $(function() {
+        renderAddNewItemInputs();
+        getAllItems();
+
+        $("#AddNewItemContainer").on("click", ".add-item", function(e) {
+          e.preventDefault();
+          //console.log($(this));
+          var itemTitle = $(this).siblings(".item-title").val();
+          var itemUrl = $(this).siblings(".item-url").val();
+          // console.log(itemTitle);
+          // console.log(itemUrl);
+          postNewItem(itemTitle, itemUrl);
+        });
+
+        $("#ItemsListContainer").on("click", ".update-item", function(e) {
+          e.preventDefault();
+          var itemId = $(this).closest(".list-item").data("id");
+          var itemTitle = $(this).siblings(".item-title").val();
+          var itemUrl = $(this).siblings(".item-url").val();
+          // console.log(itemTitle);
+          // console.log(itemUrl);
+          updateItem(itemId, itemTitle, itemUrl);
+        });
+
+        $("#ItemsListContainer").on("click", ".delete-item", function(e) {
+          e.preventDefault();
+          var itemId = $(this).closest(".list-item").data("id");
+          deleteItem(itemId);
+        });
+      });
+
+
+      // data // optional, Validations: Must be a Hash
+      // data[attributes] // optional, Validations: Must be a Hash
+      // data[attributes][title] // optional, Validations: Must be String
+      // data[attributes][url] // optional, Validations: Must be String
+
+      // {
+      //   "data": [{
+      //       "id": "55b070ff-8a25-4fb8-9a8d-1617bbd8b788",
+      //       "type": "listings",
+      //       "attributes": {
+      //         "title": "Sweet listing",
+      //         "url": "http://google.com"
+      //       }
+      //     },
+      //     {
+      //       "id": "71b3b643-c9b5-4761-aa74-69057ccf1591",
+      //       "type": "listings",
+      //       "attributes": {
+      //         "title": "Sweet listing",
+      //         "url": "http://google.com"
+      //       }
+      //     }]
+      // }
+
+      //// TODOs (or not) ////
+
+      //// GET (single item)
+      // function getItem(id) {
+      //   $.ajax({
+      //     type: "GET",
+      //     url: "https://clientside-api.herokuapp.com/api/v1/listings/" + id,
+      //   });
+      // }</script><script type="text/javascript" src="/property-bookmarker/static/js/main.712cb847.js"></script></body></html>
