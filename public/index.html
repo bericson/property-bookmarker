@@ -3,13 +3,36 @@
   <head>
     <script data-require="jquery@3.1.1" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <!-- <script type="text/javascript" src="../src/config.js"></script> -->
+    <style type="text/css">
+      h1 {
+        margin-left: 35px;
+      }
+      ul {
+        list-style: none;
+      }
+      #AddNewItemContainer, #MessageContainer {
+        margin-left: 40px;
+      }
+      #MessageContainer {
+        margin-top:15px;
+        font-weight: bold;
+        font-style: italic;
+      }      
+      .success {
+        color: green;
+      }
+      .error {
+        color: red;
+      }
+    </style>
   </head>
 
   <body>
     <div id="root" style="display: none;"></div>
 
-    <h1>Property Bookmarker <span style="font-size: 0.5em;">(basic JSON API CRUD UI)</span></h1>
+    <h1>Listings <span style="font-size: 0.5em;">Property Bookmarker (basic JSON API CRUD UI)</span></h1>
     <div id="AddNewItemContainer"></div>
+    <div id="MessageContainer"></div>
     <div id="ItemsListContainer"></div>
 
     <script type="text/javascript">
@@ -42,11 +65,11 @@
       }
 
       function renderAddNewItemInputs() {
-        var itemElsGroup = $('<form id="AddNewItemForm"><ul><li>' + 
+        var itemElsGroup = $('<form id="AddNewItemForm">' + 
                               createItemInput("title", "Title") + 
                               createItemInput("url", "URL") + 
                               createItemActionBtn("add", "Add New Item") + 
-                            '</li></ul></form>');
+                            '</form>');
         itemElsGroup.appendTo("#AddNewItemContainer");
       }
 
@@ -95,7 +118,7 @@
           // console.log("resp:", resp);
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
-          $("<div>").text(textStatus + ": " + errorThrown + " - " + JSON.stringify(resp)).appendTo("#ItemsListContainer");
+          $("#MessageContainer").removeClass().addClass("error").text(textStatus + ": " + errorThrown + " - " + JSON.stringify(resp));
         });
       }
 
@@ -120,7 +143,7 @@
           // console.log("textStatus:", textStatus);
           clearAddNewItemInputs();
           clearItemsList();
-          $("<div>").text("Successfully added a new item.").appendTo("#ItemsListContainer");
+          $("#MessageContainer").removeClass().addClass("success").text("Successfully added a new item.");
           getAllItems();
         })
         .fail(function(resp, textStatus, errorThrown) {
@@ -128,7 +151,7 @@
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
           clearItemsList();
-          $("<div>").text("Sorry, adding a new item failed.").appendTo("#ItemsListContainer");
+          $("#MessageContainer").removeClass().addClass("error").text("Sorry, adding a new item failed.");
           getAllItems();
         });
       }
@@ -152,7 +175,7 @@
           // console.log("resp:", resp);
           // console.log("textStatus:", textStatus);
           clearItemsList();
-          $("<div>").text("Successfully updated item ID: " + id).appendTo("#ItemsListContainer");
+          $("#MessageContainer").removeClass().addClass("success").text("Successfully updated item ID: " + id);
           getAllItems();
         })
         .fail(function(resp, textStatus, errorThrown) {
@@ -160,7 +183,7 @@
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
           clearItemsList();
-          $("<div>").text("Sorry, failed to update item ID: " + id).appendTo("#ItemsListContainer");
+          $("#MessageContainer").removeClass().addClass("error").text("Sorry, failed to update item ID: " + id);
           getAllItems();
         });
       }
@@ -175,7 +198,7 @@
           // console.log("resp:", resp);
           // console.log("textStatus:", textStatus);
           clearItemsList();
-          $("<div>").text("Successfully deleted item ID: " + id).appendTo("#ItemsListContainer");
+          $("#MessageContainer").removeClass().addClass("success").text("Successfully deleted item ID: " + id);
           getAllItems();
         })
         .fail(function(resp, textStatus, errorThrown) {
@@ -183,7 +206,7 @@
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
           clearItemsList();
-          $("<div>").text("Sorry, failed to delete item ID: " + id).appendTo("#ItemsListContainer");
+          $("#MessageContainer").removeClass().addClass("error").text("Sorry, failed to delete item ID: " + id);
           getAllItems();
         });
       }
