@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import config from './config';
+//import config from './config';
 
 //const apiKey = config.API_KEY;
 

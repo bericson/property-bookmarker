@@ -50,12 +50,12 @@
         itemElsGroup.appendTo("#AddNewItemContainer");
       }
 
-      const apiKey = config.API_KEY;
+      //const apiKey = config.API_KEY;
 
       $.ajaxSetup({
         //dataType: 'json',
         beforeSend: function(xhr) {
-          xhr.setRequestHeader("Authorization", apiKey);
+          xhr.setRequestHeader("Authorization", "455fd78df48d4cd7f32a008259ed569d");
         }
       });
 
