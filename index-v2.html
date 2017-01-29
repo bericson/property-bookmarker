@@ -1,4 +1,19 @@
-<!DOCTYPE html><html><head><script data-require="jquery@3.1.1" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script><style>h1{margin-left:35px}ul{list-style:none}#AddNewItemContainer,#MessageContainer{margin-left:40px}#MessageContainer{margin-top:15px;font-weight:700;font-style:italic}.success{color:green}.error{color:red}</style><link href="/property-bookmarker/static/css/main.9a0fe4f1.css" rel="stylesheet"></head><body><div id="root" style="display:none"></div><h1>Listings <span style="font-size:.5em">Property Bookmarker (basic JSON API CRUD UI)</span></h1><div id="AddNewItemContainer"></div><div id="MessageContainer"></div><div id="ItemsListContainer"></div><script type="text/javascript">//// TODOs:
+<!DOCTYPE html>
+<html>
+  <head>
+    <script data-require="jquery@3.1.1" data-semver="3.1.1" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!-- <script type="text/javascript" src="../src/config.js"></script> -->
+  </head>
+
+  <body>
+    <div id="root" style="display: none;"></div>
+
+    <h1>Property Bookmarker <span style="font-size: 0.5em;">(basic JSON API CRUD UI)</span></h1>
+    <div id="AddNewItemContainer"></div>
+    <div id="ItemsListContainer"></div>
+
+    <script type="text/javascript">
+      //// TODOs:
       //  - document thought process/reasoning (only for notable/major moves?) as developing
       //  - generally develop with the idea that functions are/or are parts of components with 
       //    the idea of eventully developing all of UI in React
@@ -27,11 +42,11 @@
       }
 
       function renderAddNewItemInputs() {
-        var itemElsGroup = $('<form id="AddNewItemForm">' + 
+        var itemElsGroup = $('<form id="AddNewItemForm"><ul><li>' + 
                               createItemInput("title", "Title") + 
                               createItemInput("url", "URL") + 
                               createItemActionBtn("add", "Add New Item") + 
-                            '</form>');
+                            '</li></ul></form>');
         itemElsGroup.appendTo("#AddNewItemContainer");
       }
 
@@ -80,7 +95,7 @@
           // console.log("resp:", resp);
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
-          $("#MessageContainer").removeClass().addClass("error").text(textStatus + ": " + errorThrown + " - " + JSON.stringify(resp));
+          $("<div>").text(textStatus + ": " + errorThrown + " - " + JSON.stringify(resp)).appendTo("#ItemsListContainer");
         });
       }
 
@@ -105,7 +120,7 @@
           // console.log("textStatus:", textStatus);
           clearAddNewItemInputs();
           clearItemsList();
-          $("#MessageContainer").removeClass().addClass("success").text("Successfully added a new item.");
+          $("<div>").text("Successfully added a new item.").appendTo("#ItemsListContainer");
           getAllItems();
         })
         .fail(function(resp, textStatus, errorThrown) {
@@ -113,7 +128,7 @@
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
           clearItemsList();
-          $("#MessageContainer").removeClass().addClass("error").text("Sorry, adding a new item failed.");
+          $("<div>").text("Sorry, adding a new item failed.").appendTo("#ItemsListContainer");
           getAllItems();
         });
       }
@@ -137,7 +152,7 @@
           // console.log("resp:", resp);
           // console.log("textStatus:", textStatus);
           clearItemsList();
-          $("#MessageContainer").removeClass().addClass("success").text("Successfully updated item ID: " + id);
+          $("<div>").text("Successfully updated item ID: " + id).appendTo("#ItemsListContainer");
           getAllItems();
         })
         .fail(function(resp, textStatus, errorThrown) {
@@ -145,7 +160,7 @@
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
           clearItemsList();
-          $("#MessageContainer").removeClass().addClass("error").text("Sorry, failed to update item ID: " + id);
+          $("<div>").text("Sorry, failed to update item ID: " + id).appendTo("#ItemsListContainer");
           getAllItems();
         });
       }
@@ -160,7 +175,7 @@
           // console.log("resp:", resp);
           // console.log("textStatus:", textStatus);
           clearItemsList();
-          $("#MessageContainer").removeClass().addClass("success").text("Successfully deleted item ID: " + id);
+          $("<div>").text("Successfully deleted item ID: " + id).appendTo("#ItemsListContainer");
           getAllItems();
         })
         .fail(function(resp, textStatus, errorThrown) {
@@ -168,7 +183,7 @@
           // console.log("textStatus:", textStatus);
           // console.log("errorThrown:", errorThrown);
           clearItemsList();
-          $("#MessageContainer").removeClass().addClass("error").text("Sorry, failed to delete item ID: " + id);
+          $("<div>").text("Sorry, failed to delete item ID: " + id).appendTo("#ItemsListContainer");
           getAllItems();
         });
       }
@@ -237,4 +252,9 @@
       //     type: "GET",
       //     url: "https://clientside-api.herokuapp.com/api/v1/listings/" + id,
       //   });
-      // }</script><script type="text/javascript" src="/property-bookmarker/static/js/main.038437c7.js"></script></body></html>
+      // }
+
+    </script>
+
+  </body>
+</html>
